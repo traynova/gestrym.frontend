@@ -9,11 +9,11 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-neutral-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background aesthetics */}
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background aesthetics - Estilo SaaS Moderno Light */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/40 via-neutral-950/80 to-neutral-950 opacity-100"></div>
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-900/30 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] mix-blend-multiply pointer-events-none -translate-y-1/4 translate-x-1/4"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] mix-blend-multiply pointer-events-none translate-y-1/4 -translate-x-1/4"></div>
       </div>
 
       <motion.div 
@@ -22,15 +22,23 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="sm:mx-auto sm:w-full sm:max-w-md relative z-10"
       >
-        <h2 className="mt-6 text-center text-4xl font-extrabold text-white tracking-tight">
+        <div className="text-center">
+            {/* Pequeño tag superior decorativo */}
+           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-primary text-sm font-semibold mb-6">
+             <span className="w-2 h-2 rounded-full bg-secondary"></span> 
+             Gestrym App
+           </span>
+        </div>
+
+        <h2 className="text-center text-4xl font-extrabold text-primary tracking-tight">
           {title}
         </h2>
-        <p className="mt-2 text-center text-sm text-neutral-400">
+        <p className="mt-3 text-center text-[15px] text-slate-500 max-w-sm mx-auto">
           {subtitle}
         </p>
 
-        <div className="mt-8">
-          <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/5 py-8 px-4 shadow-2xl sm:rounded-xl sm:px-10">
+        <div className="mt-10">
+          <div className="bg-white border border-slate-200/60 py-8 px-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-3xl sm:px-10 backdrop-blur-sm">
             {children}
           </div>
         </div>

@@ -1,64 +1,108 @@
 import { create } from 'zustand';
-import { authApi, LoginRequest } from '../api/auth.endpoints';
+import { persist } from 'zustand/middleware';
+// Asumimos que authService se creará en el siguiente paso
+import { authService, type LoginCredentials } from '../api/authService';
 
-interface AuthState {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  token: string | null;
-  
-  login: (data: LoginRequest) => Promise<void>;
-  logout: () => Promise<void>;
-  validateSession: () => Promise<void>;
+// Tipos base para el User y el estado de Autenticación
+export interface User {
+  email: string;
+  role_id: number;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  isAuthenticated: !!localStorage.getItem('token'),
-  isLoading: false,
-  token: localStorage.getItem('token'),
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 
-  login: async (data: LoginRequest) => {
-    set({ isLoading: true });
-    try {
-      const response = await authApi.login(data);
-      localStorage.setItem('token', response.access_token);
-      localStorage.setItem('refreshToken', response.refresh_token);
-      set({ isAuthenticated: true, token: response.access_token, isLoading: false });
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
+  loginAction: (credentials: LoginCredentials) => Promise<void>;
+  logoutAction: () => void;
+  checkSession: () => Promise<void>;
+}
 
-  logout: async () => {
-    const { token } = get();
-    if (token) {
-      try {
-        await authApi.logout(token);
-      } catch (error) {
-        console.error('Logout request failed', error);
-      }
-    }
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    set({ isAuthenticated: false, token: null });
-    window.location.href = '/login';
-  },
+/**
+ * Store global de Autenticación mediante Zustand.
+ * Mantiene el estado del usuario logueado en memoria y lo sincroniza con `localStorage`.
+ */
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      // Estado inicial
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
 
-  validateSession: async () => {
-    const { token, logout } = get();
-    if (!token) {
-      set({ isAuthenticated: false });
-      return;
-    }
+      /**
+       * Inicia sesión, guarda credenciales en memoria, y el middleware Persist lo hace en localStorage.
+       */
+      loginAction: async (credentials) => {
+        try {
+          set({ isLoading: true });
 
-    set({ isLoading: true });
-    try {
-      await authApi.validate();
-      set({ isAuthenticated: true, isLoading: false });
-    } catch (error) {
-      // Token is invalid or expired
-      void logout();
-      set({ isLoading: false });
+          // Llama al servicio de API real
+          const data = await authService.login(credentials);
+
+          set({
+            user: { email: data.email, role_id: data.role_id },
+            token: data.access_token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error; // Lanzamos el error para que el UI pueda mostrar un mensaje
+        }
+      },
+
+      /**
+       * Limpia por completo el estado y cierra la sesión.
+       * Esto resuelve estáticamente el error en `axios.config.ts`.
+       */
+      logoutAction: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+      },
+
+      /**
+       * Verifica si el token actual sigue siendo válido en el backend (útil en recargas / F5).
+       * Si no es válido o falla, limpia la sesión automáticamente.
+       */
+      checkSession: async () => {
+        const { token, logoutAction } = get();
+        
+        // Si no tenemos token almacenado, no tiene sentido validar.
+        if (!token) return;
+
+        try {
+          set({ isLoading: true });
+          
+          const response = await authService.validateToken();
+          
+          if (!response.valid) {
+            logoutAction(); // Si el backend responde explícitamente invalidando el session
+          } else {
+            set({ isLoading: false });
+          }
+        } catch (error) {
+           // Cualquier fallo HTTP (401, timeout) durante la validación purga la sesión por seguridad
+           logoutAction();
+        }
+      },
+    }),
+    {
+      name: 'gestrym-auth-storage', // Key de localStorage
+      
+      // Controla exactamente qué propiedades persistir para obviar isLoading (así no "cuelga" en refresh)
+      partialize: (state: AuthState) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
-  }
-}));
+  )
+);

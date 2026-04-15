@@ -1,13 +1,18 @@
+import { ReactNode, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import { useEffect } from 'react';
 
-export function ProtectedRoute() {
-  const { isAuthenticated, validateSession, isLoading } = useAuthStore();
+interface ProtectedRouteProps {
+  children?: ReactNode;
+}
+
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isAuthenticated, isLoading, checkSession } = useAuthStore();
 
   useEffect(() => {
-    validateSession();
-  }, [validateSession]);
+    // Check if session is still valid on mount
+    checkSession();
+  }, [checkSession]);
 
   if (isLoading) {
     return (
@@ -21,5 +26,5 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
-}
+  return children ? <>{children}</> : <Outlet />;
+};

@@ -48,7 +48,7 @@ export function RegisterPage() {
   return (
     <AuthLayout 
       title="Crea tu cuenta" 
-      subtitle="Únete a Traynova y comienza tu viaje"
+      subtitle="Únete a Gestrym y comienza tu viaje"
     >
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         {errorDesc && (

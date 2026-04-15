@@ -2,7 +2,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { LogOut } from 'lucide-react';
 
 export default function Dashboard() {
-  const { logout } = useAuthStore();
+  const { logoutAction } = useAuthStore();
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
@@ -10,7 +10,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-12">
           <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
           <button 
-            onClick={() => void logout()}
+            onClick={() => void logoutAction()}
             className="flex items-center gap-2 px-4 py-2 bg-white text-rose-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium"
           >
             <LogOut className="w-4 h-4" />
