@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
-const BASE_AUTH = import.meta.env.VITE_BASE_AUTH || 'http://localhost:8080/api';
+const BASE_AUTH = import.meta.env.VITE_BASE_AUTH || '';
 
 if (!import.meta.env.VITE_BASE_AUTH) {
   console.warn("⚠️ Warning: VITE_BASE_AUTH no está definida en tu archivo .env. Usando fallback por defecto.");
@@ -13,7 +13,7 @@ if (!import.meta.env.VITE_BASE_AUTH) {
  */
 export const apiClient = axios.create({
   baseURL: BASE_AUTH,
-  timeout: 10000, 
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -33,7 +33,7 @@ apiClient.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {
@@ -61,12 +61,12 @@ apiClient.interceptors.response.use(
       if (status === 401) {
         // Ejecutamos la acción de logout definida en el estado global
         useAuthStore.getState().logoutAction();
-        
+
         // Si usamos 'react-router-dom', también podríamos forzar una redirección
         // window.location.href = '/login'; -> Opcionable según qué maneje el enrutador
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

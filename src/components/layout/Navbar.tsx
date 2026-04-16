@@ -34,6 +34,7 @@ export default function Navbar() {
             <a href="#features" className="text-slate-300 hover:text-white transition-colors font-medium text-sm lg:text-base">Solución</a>
             <a href="#demo" className="text-slate-300 hover:text-white transition-colors font-medium text-sm lg:text-base">Demo</a>
             <a href="#benefits" className="text-slate-300 hover:text-white transition-colors font-medium text-sm lg:text-base">Beneficios</a>
+            <Link to="/pricing" className="text-slate-300 hover:text-white transition-colors font-medium text-sm lg:text-base">Precios</Link>
             <div className="flex items-center gap-5 ml-4 border-l border-white/10 pl-8">
               <Link to="/login" className="text-slate-300 font-semibold hover:text-white transition-colors">Log In</Link>
               <Link to="/register" className="bg-red-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-red-500 transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] transform hover:-translate-y-0.5 inline-block">
@@ -65,6 +66,7 @@ export default function Navbar() {
               <a href="#features" onClick={() => setIsOpen(false)} className="text-slate-300 hover:text-white font-medium py-2 text-lg">Solución</a>
               <a href="#demo" onClick={() => setIsOpen(false)} className="text-slate-300 hover:text-white font-medium py-2 text-lg">Demo</a>
               <a href="#benefits" onClick={() => setIsOpen(false)} className="text-slate-300 hover:text-white font-medium py-2 text-lg">Beneficios</a>
+              <Link to="/pricing" onClick={() => setIsOpen(false)} className="text-slate-300 hover:text-white font-medium py-2 text-lg block">Precios</Link>
               
               <hr className="border-white/10 my-2" />
               
