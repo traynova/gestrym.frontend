@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -21,6 +21,7 @@ import {
   Rocket
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { authService, PublicRole } from '../api/authService';
 
 const benefits = [
   {
@@ -47,6 +48,56 @@ const benefits = [
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [roles, setRoles] = useState<PublicRole[]>([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const data = await authService.getPublicRoles();
+        // Limpiamos className por class si viene del backend con nomenclatura React
+        const sanitizedData = data.map(role => {
+            let description = role.description.replace(/className=/g, 'class=');
+            
+            // Fix JSX-style self-closing tags (e.g., <span ... />) which are invalid in standard HTML
+            // and cause the browser to nest following content inside the small bullet span.
+            description = description.replace(/<(span|div|i|li|ul)([^>]*)\s+\/>/g, '<$1$2></$1>');
+            // Also handle cases without space before />
+            description = description.replace(/<(span|div|i|li|ul)([^>]*)\/>/g, '<$1$2></$1>');
+            
+            return {
+                ...role,
+                description
+            };
+        });
+        setRoles(sanitizedData);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  const getRoleIcon = (name: string) => {
+    switch (name.toLowerCase()) {
+      case 'gimnasios':
+      case 'gimnasio':
+        return <Building2 className="w-7 h-7 text-slate-300 group-hover:text-white" />;
+      case 'entrenadores':
+      case 'entrenador':
+        return <UserCircle className="w-7 h-7 text-red-500" />;
+      case 'alumnos':
+      case 'alumno':
+      case 'clientes':
+      case 'cliente':
+        return <Users className="w-7 h-7 text-slate-300 group-hover:text-white" />;
+      default:
+        return <Users className="w-7 h-7 text-slate-300 group-hover:text-white" />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -163,81 +214,60 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-            
-            {/* Card Gimnasios */}
-            <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-3xl p-8 hover:bg-slate-800/80 hover:border-slate-700 transition-all duration-300 group">
-              <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 group-hover:bg-slate-700 transition-colors">
-                <Building2 className="w-7 h-7 text-slate-300 group-hover:text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Gimnasios</h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-slate-400 group-hover:text-slate-300 transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                  Controla entrenadores
-                </li>
-                <li className="flex items-center gap-3 text-slate-400 group-hover:text-slate-300 transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                  Control unificado de clientes
-                </li>
-                <li className="flex items-center gap-3 text-slate-400 group-hover:text-slate-300 transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                  Operación desde un solo panel
-                </li>
-              </ul>
-            </div>
+            {loadingRoles ? (
+               // Loading Skeleton
+               [1, 2, 3].map((i) => (
+                 <div key={i} className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-3xl p-8 animate-pulse">
+                   <div className="w-14 h-14 bg-slate-800 rounded-2xl mb-6"></div>
+                   <div className="h-8 bg-slate-800 rounded w-1/2 mb-4"></div>
+                   <div className="space-y-3">
+                     <div className="h-4 bg-slate-800 rounded w-full"></div>
+                     <div className="h-4 bg-slate-800 rounded w-5/6"></div>
+                     <div className="h-4 bg-slate-800 rounded w-4/6"></div>
+                   </div>
+                 </div>
+               ))
+            ) : (
+              roles.map((role) => {
+                const isEntrenador = role.name.toLowerCase().includes('entrenador');
+                
+                if (isEntrenador) {
+                  return (
+                    <div key={role.id} className="bg-gradient-to-b from-slate-800 to-slate-900 backdrop-blur border border-red-500/30 rounded-3xl p-8 transform md:-translate-y-4 hover:border-red-500/50 transition-all duration-300 group relative overflow-hidden shadow-lg">
+                      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-600 to-rose-400" />
+                      
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 transition-colors">
+                          {getRoleIcon(role.name)}
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                          Principal
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-2xl font-bold text-white mb-4">{role.name}</h3>
+                      <div 
+                        className="description-content [&_ul]:space-y-3 [&_li]:flex [&_li]:items-start [&_li]:gap-3 [&_li]:text-slate-300 [&_span]:shrink-0 [&_span]:mt-2"
+                        dangerouslySetInnerHTML={{ __html: role.description }} 
+                      />
+                    </div>
+                  );
+                }
 
-            {/* Card Entrenadores (Highlighted) */}
-            <div className="bg-gradient-to-b from-slate-800 to-slate-900 backdrop-blur border border-red-500/30 rounded-3xl p-8 transform md:-translate-y-4 hover:border-red-500/50 transition-all duration-300 group relative overflow-hidden shadow-lg">
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-600 to-rose-400" />
-              
-              <div className="flex justify-between items-start mb-6">
-                <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 transition-colors">
-                  <UserCircle className="w-7 h-7 text-red-500" />
-                </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
-                  Principal
-                </span>
-              </div>
-              
-              <h3 className="text-2xl font-bold text-white mb-4">Entrenadores</h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                  Organiza todos tus clientes
-                </li>
-                <li className="flex items-center gap-3 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                  Automatiza tu trabajo
-                </li>
-                <li className="flex items-center gap-3 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                  Sin depender de Excel
-                </li>
-              </ul>
-            </div>
-
-            {/* Card Alumnos */}
-            <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-3xl p-8 hover:bg-slate-800/80 hover:border-slate-700 transition-all duration-300 group">
-              <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 group-hover:bg-slate-700 transition-colors">
-                <Users className="w-7 h-7 text-slate-300 group-hover:text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Alumnos</h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-slate-400 group-hover:text-slate-300 transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                  Accede a tus rutinas
-                </li>
-                <li className="flex items-center gap-3 text-slate-400 group-hover:text-slate-300 transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                  Visualiza gráficos interactivos
-                </li>
-                <li className="flex items-center gap-3 text-slate-400 group-hover:text-slate-300 transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                  Seguimiento desde cualquier lugar
-                </li>
-              </ul>
-            </div>
-
+                return (
+                  <div key={role.id} className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-3xl p-8 hover:bg-slate-800/80 hover:border-slate-700 transition-all duration-300 group">
+                    <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 group-hover:bg-slate-700 transition-colors">
+                      {getRoleIcon(role.name)}
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">{role.name}</h3>
+                    <div 
+                      className="description-content [&_ul]:space-y-3 [&_li]:flex [&_li]:items-start [&_li]:gap-3 [&_li]:text-slate-400 group-hover:[&_li]:text-slate-300 [&_span]:shrink-0 [&_span]:mt-2"
+                      dangerouslySetInnerHTML={{ __html: role.description }} 
+                    />
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

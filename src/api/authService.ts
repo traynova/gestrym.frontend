@@ -58,6 +58,12 @@ export interface ConfirmEmailResponse {
   };
 }
 
+export interface PublicRole {
+  id: number;
+  name: string;
+  description: string;
+}
+
 // ----------------------------------------------------------------------
 // AUTH SERVICE
 // ----------------------------------------------------------------------
@@ -109,6 +115,18 @@ export const authService = {
   confirmEmail: async (token: string): Promise<ConfirmEmailResponse> => {
     try {
       const { data } = await apiClient.get<ConfirmEmailResponse>(`/public/auth/confirm?token=${token}`);
+      return data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  },
+
+  /**
+   * Obtiene los roles públicos y sus descripciones desde el servidor.
+   */
+  getPublicRoles: async (): Promise<PublicRole[]> => {
+    try {
+      const { data } = await apiClient.get<PublicRole[]>('/public/roles');
       return data;
     } catch (error) {
       return handleApiError(error);
