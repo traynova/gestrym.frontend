@@ -5,6 +5,7 @@ import { authService, type LoginCredentials } from '../api/authService';
 
 // Tipos base para el User y el estado de Autenticación
 export interface User {
+  id: number;
   email: string;
   role_id: number;
 }
@@ -15,7 +16,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 
-  loginAction: (credentials: LoginCredentials) => Promise<void>;
+  loginAction: (credentials: LoginCredentials) => Promise<boolean>;
   logoutAction: () => void;
   checkSession: () => Promise<void>;
 }
@@ -44,11 +45,17 @@ export const useAuthStore = create<AuthState>()(
           const data = await authService.login(credentials);
 
           set({
-            user: { email: data.email, role_id: data.role_id },
+            user: { 
+              id: data.id, 
+              email: data.email, 
+              role_id: data.role_id 
+            },
             token: data.access_token,
             isAuthenticated: true,
             isLoading: false,
           });
+
+          return data.initial_login; // Retornamos el flag para el componente
         } catch (error) {
           set({ isLoading: false });
           throw error; // Lanzamos el error para que el UI pueda mostrar un mensaje
@@ -75,22 +82,29 @@ export const useAuthStore = create<AuthState>()(
       checkSession: async () => {
         const { token, logoutAction } = get();
         
-        // Si no tenemos token almacenado, no tiene sentido validar.
         if (!token) return;
 
         try {
-          set({ isLoading: true });
-          
           const response = await authService.validateToken();
           
-          if (!response.valid) {
-            logoutAction(); // Si el backend responde explícitamente invalidando el session
-          } else {
-            set({ isLoading: false });
+          if (response && response.valid === false) {
+            logoutAction();
+          } else if (response && response.valid) {
+            set({ 
+              user: { 
+                id: response.user_id, 
+                email: response.email, 
+                role_id: response.role_id 
+              },
+              isLoading: false 
+            });
           }
         } catch (error) {
-           // Cualquier fallo HTTP (401, timeout) durante la validación purga la sesión por seguridad
-           logoutAction();
+          // No cerramos sesión por errores de red o 500, dejamos que los interceptores de Axios
+          // manejen los 401 si realmente el token no sirve.
+          console.error("Token validation failed, but keeping session for now:", error);
+        } finally {
+          set({ isLoading: false });
         }
       },
     }),

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { 
-  Dumbbell, 
   TrendingUp, 
   Users, 
   Laptop,
@@ -383,8 +382,8 @@ export default function Home() {
 
             {/* Card 2 */}
             <div className="bg-white p-10 rounded-[2rem] border border-slate-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-green-600 group-hover:text-white transition-all duration-300">
-                <Dumbbell className="w-8 h-8" />
+               <div className="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-green-600 group-hover:text-white transition-all duration-300">
+                <img src="/assets/images/LOGO_G.png" className="w-8 h-8 object-contain" alt="G" />
               </div>
               <h3 className="text-2xl font-bold text-primary mb-4">Creación de Rutinas</h3>
               <p className="text-slate-600 leading-relaxed text-lg">Constructor visual de entrenamientos. Asigna bloques, superseries, tiempos de descanso y enlaza videos explicativos en segundos utilizando plantillas.</p>

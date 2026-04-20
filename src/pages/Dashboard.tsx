@@ -1,39 +1,31 @@
 import { useAuthStore } from '../store/useAuthStore';
-import { LogOut } from 'lucide-react';
+import DashboardLayout from '../components/layout/DashboardLayout';
+import { ClientsView } from './dashboard/ClientsView';
 
 export default function Dashboard() {
-  const { logoutAction } = useAuthStore();
+  const { user } = useAuthStore();
 
+  // Si es Cliente (Role 1), mostramos su vista específica (Placeholder por ahora)
+  if (user?.role_id === 1) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-[70vh] space-y-6">
+          <div className="w-24 h-24 bg-red-600/10 rounded-full flex items-center justify-center border border-red-600/20">
+             <img src="/assets/images/LOGO_G.png" alt="G" className="w-12 h-12" />
+          </div>
+          <div className="text-center">
+            <h2 className="text-3xl font-black text-white mb-2">Bienvenido a Gestrym</h2>
+            <p className="text-slate-500 font-medium">Estamos preparando tu sección personalizada.</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Vista para Entrenador (2) y Gimnasio (3)
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-12">
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-          <button 
-            onClick={() => void logoutAction()}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-rose-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium"
-          >
-            <LogOut className="w-4 h-4" />
-            Cerrar Sesión
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Example cards */}
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h3 className="text-slate-500 font-medium mb-1">Clientes Activos</h3>
-            <p className="text-4xl font-bold text-slate-900">0</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h3 className="text-slate-500 font-medium mb-1">Ingresos Mensuales</h3>
-            <p className="text-4xl font-bold text-slate-900">$0</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h3 className="text-slate-500 font-medium mb-1">Planes Asignados</h3>
-            <p className="text-4xl font-bold text-slate-900">0</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <DashboardLayout>
+      <ClientsView />
+    </DashboardLayout>
   );
 }

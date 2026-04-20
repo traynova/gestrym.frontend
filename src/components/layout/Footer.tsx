@@ -1,4 +1,4 @@
-import { Dumbbell, Instagram, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { Instagram, Twitter, Linkedin, Facebook } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -8,10 +8,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
           <div className="md:col-span-1 lg:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/20">
-                <Dumbbell className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-extrabold text-xl tracking-tight text-white">GESTRYM</span>
+              <img src="/assets/images/LOGO_G.png" alt="Gestrym Logo" className="w-10 h-10 object-contain" />
+              <img src="/assets/images/LOGO_GESTRIM.png" alt="GESTRYM" className="h-4 w-auto object-contain" />
             </div>
             <p className="text-slate-400 mb-6 text-sm leading-relaxed max-w-sm">
               El software definitivo para automatizar tu coaching online. Gestiona clientes, crea rutinas y escala tu negocio fitness sin límites.
@@ -65,7 +63,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Gestrym Inc. Todos los derechos reservados.
           </p>
           <p className="text-slate-500 text-sm flex items-center gap-1">
-            Diseñado para <Dumbbell className="w-3 h-3 text-red-500 mx-1" /> el ecosistema fitness
+            Diseñado para <img src="/assets/images/LOGO_G.png" className="w-4 h-4 mx-1 object-contain" alt="G" /> el ecosistema fitness
           </p>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
-const BASE_AUTH = import.meta.env.VITE_BASE_AUTH || '';
+const rawBaseAuth = import.meta.env.VITE_BASE_AUTH || '';
+const BASE_AUTH = rawBaseAuth.endsWith('/') ? rawBaseAuth.slice(0, -1) : rawBaseAuth;
 
 if (!import.meta.env.VITE_BASE_AUTH) {
   console.warn("⚠️ Warning: VITE_BASE_AUTH no está definida en tu archivo .env. Usando fallback por defecto.");
