@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi, Role } from '../../api/auth.endpoints';
-import { Mail, User, Loader2, Lock, MapPin, Building2, ChevronRight, Dumbbell, ArrowLeft, Eye, EyeOff, XCircle, CheckCircle2, Ticket } from 'lucide-react';
+import { Mail, User, Loader2, Lock, MapPin, ChevronRight, ArrowLeft, Eye, EyeOff, XCircle, CheckCircle2, Ticket } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PhoneInputField } from '../../components/forms/PhoneInput';

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
-import { authApi, RelationshipResponse, RegisterRequest } from '../../api/auth.endpoints';
+import { authApi, RelationshipResponse } from '../../api/auth.endpoints';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export function ClientsView() {

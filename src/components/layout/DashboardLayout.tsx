@@ -98,10 +98,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </NavSection>
 
         <NavSection title="Biblioteca" collapsed={isSidebarCollapsed}>
-          <NavItem icon={BookOpen} label="Programas" collapsed={isSidebarCollapsed} />
+          <NavItem 
+            icon={BookOpen} 
+            label="Programas" 
+            active={isActive('/training/plans')} 
+            onClick={() => navigate('/training/plans')} 
+            collapsed={isSidebarCollapsed} 
+          />
           <NavItem icon={ListTodo} label="Formularios" collapsed={isSidebarCollapsed} />
           <NavItem icon={Activity} label="Métricas" collapsed={isSidebarCollapsed} />
-          <NavItem icon={Dumbbell} label="Ejercicios" collapsed={isSidebarCollapsed} />
+          <NavItem 
+            icon={Dumbbell} 
+            label="Ejercicios" 
+            active={isActive('/training/exercises')} 
+            onClick={() => navigate('/training/exercises')} 
+            collapsed={isSidebarCollapsed} 
+          />
           <NavItem icon={GraduationCap} label="Academia" collapsed={isSidebarCollapsed} />
         </NavSection>
 

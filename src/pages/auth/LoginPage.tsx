@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Loader2, AlertCircle, Dumbbell, ArrowLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Loader2, AlertCircle, ArrowLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { useAuthStore } from '../../store/useAuthStore';
@@ -102,7 +102,7 @@ export function LoginPage() {
             <div className="space-y-1.5 focus-within:z-20 relative">
               <div className="flex items-center justify-between px-1">
                 <label className="text-sm font-semibold text-slate-400">Contraseña</label>
-                <Link to="/forgot-password" size="sm" className="text-xs font-bold text-red-500 hover:text-red-400 transition-colors">
+                <Link to="/forgot-password" className="text-xs font-bold text-red-500 hover:text-red-400 transition-colors">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>

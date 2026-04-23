@@ -8,6 +8,8 @@ import { ConfirmEmailPage } from './pages/auth/ConfirmEmailPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { SetupBrandingPage } from './pages/auth/SetupBrandingPage';
+import { ExercisesPage, TrainingPlansPage, TrainingDetailPage } from './pages/training';
+import { CreateTrainingPlanPage } from './pages/training/CreateTrainingPlanPage';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { RoleRoute } from './components/layout/RoleRoute';
 
@@ -23,13 +25,23 @@ function App() {
         <Route path="/confirm-email" element={<ConfirmEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        
+
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/setup-branding" element={<SetupBrandingPage />} />
+
+          {/* Training Module Routes */}
+          <Route path="/training/plans" element={<TrainingPlansPage />} />
+          <Route path="/training/:planId" element={<TrainingDetailPage />} />
+          <Route path="/training/exercises" element={<ExercisesPage />} />
+
+          {/* Trainer and Gym Routes */}
+          <Route element={<RoleRoute allowedRoles={[2, 3]} />}>
+            <Route path="/training/create" element={<CreateTrainingPlanPage />} />
+          </Route>
         </Route>
-        
+
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
