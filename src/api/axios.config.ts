@@ -4,8 +4,14 @@ import { useAuthStore } from '../store/useAuthStore';
 const rawBaseAuth = import.meta.env.VITE_BASE_AUTH || '';
 const BASE_AUTH = rawBaseAuth.endsWith('/') ? rawBaseAuth.slice(0, -1) : rawBaseAuth;
 
+const rawBaseProgress = import.meta.env.VITE_BASE_PROGRESS || 'https://gestrym-progress-back.onrender.com/gestrym-progress';
+const BASE_PROGRESS = rawBaseProgress.endsWith('/') ? rawBaseProgress.slice(0, -1) : rawBaseProgress;
+
 if (!import.meta.env.VITE_BASE_AUTH) {
   console.warn("⚠️ Warning: VITE_BASE_AUTH no está definida en tu archivo .env. Usando fallback por defecto.");
+}
+if (!import.meta.env.VITE_BASE_PROGRESS) {
+  console.warn("⚠️ Warning: VITE_BASE_PROGRESS no está definida en tu archivo .env. Usando fallback por defecto.");
 }
 
 /**
@@ -14,6 +20,15 @@ if (!import.meta.env.VITE_BASE_AUTH) {
  */
 export const apiClient = axios.create({
   baseURL: BASE_AUTH,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+});
+
+export const apiProgressClient = axios.create({
+  baseURL: BASE_PROGRESS,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -43,6 +58,17 @@ apiClient.interceptors.request.use(
   }
 );
 
+apiProgressClient.interceptors.request.use(
+  (config) => {
+    const { token } = useAuthStore.getState();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 /**
  * INTERCEPTOR DE RESPONSE
  * Se ejecuta en las respuestas del backend antes de que lleguen al componente o servicio que las llamó.
@@ -68,6 +94,16 @@ apiClient.interceptors.response.use(
       }
     }
 
+    return Promise.reject(error);
+  }
+);
+
+apiProgressClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      useAuthStore.getState().logoutAction();
+    }
     return Promise.reject(error);
   }
 );
