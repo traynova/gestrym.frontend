@@ -15,12 +15,14 @@ import {
   Mail,
   User as UserIcon,
   Phone,
-  ShieldAlert
+  ShieldAlert,
+  Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { authApi, RelationshipResponse } from '../../api/auth.endpoints';
 import { useAuthStore } from '../../store/useAuthStore';
+import { ClientProgressModal } from '../../components/progress/ClientProgressModal';
 
 export function ClientsView() {
   const { user: currentUser } = useAuthStore();
@@ -40,6 +42,14 @@ export function ClientsView() {
     prefix: '+57',
     role_id: 1 // 1: Cliente, 2: Entrenador
   });
+
+  const [selectedClient, setSelectedClient] = useState<{id: number, name: string} | null>(null);
+  const [showProgressModal, setShowProgressModal] = useState(false);
+
+  const handleViewProgress = (client: any) => {
+    setSelectedClient({ id: client.id, name: client.name });
+    setShowProgressModal(true);
+  };
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -208,9 +218,19 @@ export function ClientsView() {
                         </span>
                       </td>
                       <td className="px-8 py-5 text-right">
-                        <button className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-500 hover:text-white">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button 
+                            onClick={() => handleViewProgress(client)}
+                            className="p-2 hover:bg-primary/20 bg-primary/10 rounded-xl transition-all text-primary hover:text-indigo-400 border border-primary/20 flex items-center gap-1 group"
+                            title="Ver Progreso"
+                          >
+                            <Activity className="w-4 h-4" />
+                            <span className="text-[10px] font-black uppercase hidden group-hover:block transition-all">Progreso</span>
+                          </button>
+                          <button className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-500 hover:text-white">
+                            <MoreHorizontal className="w-5 h-5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -433,6 +453,12 @@ export function ClientsView() {
           </div>
         )}
       </AnimatePresence>
+      {/* Modal Progreso de Cliente */}
+      <ClientProgressModal 
+        isOpen={showProgressModal}
+        onClose={() => setShowProgressModal(false)}
+        client={selectedClient}
+      />
     </div>
   );
 }
