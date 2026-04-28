@@ -166,21 +166,20 @@ export function ExerciseFilters({
 
             {/* Dificultad */}
             <div>
-              <label className="block text-sm font-semibold text-white mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Dificultad
               </label>
               <select
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-600"
                 value={filters.difficulty || ""}
-                onChange={(e) =>
-                  handleFilterChange("difficulty", e.target.value || undefined)
-                }
-                disabled={isLoading}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:border-red-600 focus:outline-none disabled:opacity-50"
+                onChange={(e) => handleFilterChange("difficulty", e.target.value || undefined)}
               >
                 <option value="">Todas</option>
-                <option value="beginner">Principiante</option>
-                <option value="intermediate">Intermedio</option>
-                <option value="advanced">Avanzado</option>
+                {options.difficulties.map((difficulty) => (
+                  <option key={difficulty} value={difficulty}>
+                    {difficulty}
+                  </option>
+                ))}
               </select>
             </div>
 

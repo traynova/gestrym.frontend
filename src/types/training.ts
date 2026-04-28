@@ -72,6 +72,7 @@ export interface TrainingPlan {
   difficulty?: "beginner" | "intermediate" | "advanced";
   notes?: string;
   isTemplate?: boolean; // Para plantillas reutilizables
+  aiRecommendation?: string; // Feedback or suggestions from AI
 }
 
 // DTO para crear/actualizar plans

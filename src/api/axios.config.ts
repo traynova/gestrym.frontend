@@ -14,6 +14,13 @@ if (!import.meta.env.VITE_BASE_PROGRESS) {
   console.warn("⚠️ Warning: VITE_BASE_PROGRESS no está definida en tu archivo .env. Usando fallback por defecto.");
 }
 
+const rawBaseNutrition = import.meta.env.VITE_BASE_NUTRITION || 'https://gestrym-nutrition-back.onrender.com/gestrym-nutrition';
+const BASE_NUTRITION = rawBaseNutrition.endsWith('/') ? rawBaseNutrition.slice(0, -1) : rawBaseNutrition;
+
+if (!import.meta.env.VITE_BASE_NUTRITION) {
+  console.warn("⚠️ Warning: VITE_BASE_NUTRITION no está definida en tu archivo .env. Usando fallback por defecto.");
+}
+
 /**
  * Instancia centralizada de Axios para realizar todas las llamadas al API.
  * Configurada con la URL base, headers genéricos y un timeout de 10 segundos.
@@ -29,6 +36,15 @@ export const apiClient = axios.create({
 
 export const apiProgressClient = axios.create({
   baseURL: BASE_PROGRESS,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+});
+
+export const apiNutritionClient = axios.create({
+  baseURL: BASE_NUTRITION,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -69,6 +85,17 @@ apiProgressClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+apiNutritionClient.interceptors.request.use(
+  (config) => {
+    const { token } = useAuthStore.getState();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 /**
  * INTERCEPTOR DE RESPONSE
  * Se ejecuta en las respuestas del backend antes de que lleguen al componente o servicio que las llamó.
@@ -99,6 +126,16 @@ apiClient.interceptors.response.use(
 );
 
 apiProgressClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      useAuthStore.getState().logoutAction();
+    }
+    return Promise.reject(error);
+  }
+);
+
+apiNutritionClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {

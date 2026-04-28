@@ -155,4 +155,48 @@ export const trainingPlansService = {
       throw errorHandler(error);
     }
   },
+
+  /**
+   * Obtener lista de ejercicios
+   * @returns Promise con lista de ejercicios
+   */
+  async getExercises(): Promise<ExercisesResponse> {
+    try {
+      const response = await axios.get<ExercisesResponse>("/public/exercises");
+      return response.data;
+    } catch (error) {
+      throw errorHandler(error);
+    }
+  },
+
+  /**
+   * Asignar un plan de entrenamiento a un usuario
+   * @param id - ID del plan
+   * @param data - Datos de asignación
+   * @returns Promise<void>
+   */
+  async assignTrainingPlan(id: string, data: AssignTrainingPlanDTO): Promise<void> {
+    try {
+      await axios.post(`/private/training-plans/${id}/assign`, data);
+    } catch (error) {
+      throw errorHandler(error);
+    }
+  },
+
+  /**
+   * Adaptar un plan de entrenamiento usando IA
+   * @param id - ID del plan
+   * @returns Promise con el plan adaptado
+   */
+  async adaptTrainingPlan(id: string): Promise<TrainingPlan> {
+    try {
+      const response = await axios.post<{ data: TrainingPlan }>(
+        `/private/training-plans/adapt`,
+        { id }
+      );
+      return response.data.data;
+    } catch (error) {
+      throw errorHandler(error);
+    }
+  },
 };

@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { 
-  Users, 
-  MessageSquare, 
-  Phone, 
-  BookOpen, 
-  ListTodo, 
-  Activity, 
-  Dumbbell, 
-  GraduationCap, 
-  CreditCard, 
-  Globe, 
-  Bell, 
-  Palette, 
-  Users2, 
-  Code2, 
+import {
+  Users,
+  MessageSquare,
+  Phone,
+  BookOpen,
+  ListTodo,
+  Activity,
+  Dumbbell,
+  GraduationCap,
+  CreditCard,
+  Globe,
+  Bell,
+  Palette,
+  Users2,
+  Code2,
   HelpCircle,
   Search,
   Book,
@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../../store/useAuthStore';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -34,13 +34,12 @@ interface NavItemProps {
 }
 
 const NavItem = ({ icon: Icon, label, badge, active, onClick, collapsed }: NavItemProps) => (
-  <button 
+  <button
     onClick={onClick}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative ${
-      active 
-        ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' 
-        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-    }`}
+    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative ${active
+      ? 'bg-red-600 text-white shadow-lg shadow-red-600/20'
+      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+      }`}
   >
     <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-white' : 'group-hover:text-red-500 transition-colors'}`} />
     {!collapsed && (
@@ -66,7 +65,7 @@ const NavSection = ({ title, children, collapsed }: { title: string; children: R
   </div>
 );
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const { user, logoutAction } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -86,44 +85,59 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className={`px-6 mb-10 flex items-center gap-3 ${isSidebarCollapsed ? 'justify-center px-2' : ''}`}>
         <img src="/assets/images/LOGO_G.png" alt="G" className="w-8 h-8 object-contain" />
         {!isSidebarCollapsed && (
-             <img src="/assets/images/LOGO_GESTRIM.png" alt="GESTRYM" className="h-3.5 w-auto object-contain" />
+          <img src="/assets/images/LOGO_GESTRIM.png" alt="GESTRYM" className="h-3.5 w-auto object-contain" />
         )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 custom-scrollbar">
         <NavSection title="Home" collapsed={isSidebarCollapsed}>
-          <NavItem icon={Users} label="Clientes" active={isActive('/dashboard')} onClick={() => navigate('/dashboard')} collapsed={isSidebarCollapsed} />
-          <NavItem icon={Phone} label="WhatsApp" collapsed={isSidebarCollapsed} />
+          <NavItem
+            icon={user?.role_id === 1 ? Activity : Users}
+            label={user?.role_id === 1 ? "Mi progreso" : "Clientes"}
+            active={isActive('/dashboard')}
+            onClick={() => navigate('/dashboard')}
+            collapsed={isSidebarCollapsed}
+          />
+          {/* <NavItem icon={Phone} label="WhatsApp" collapsed={isSidebarCollapsed} /> */}
           <NavItem icon={MessageSquare} label="Chat" badge="Beta" collapsed={isSidebarCollapsed} />
+          {user?.role_id === 1 && (
+            <NavItem
+              icon={Book}
+              label="Nutrición"
+              active={isActive('/nutrition')}
+              onClick={() => navigate('/nutrition')}
+              collapsed={isSidebarCollapsed}
+            />
+          )}
         </NavSection>
 
         <NavSection title="Biblioteca" collapsed={isSidebarCollapsed}>
-          <NavItem 
-            icon={BookOpen} 
-            label="Programas" 
-            active={isActive('/training/plans')} 
-            onClick={() => navigate('/training/plans')} 
-            collapsed={isSidebarCollapsed} 
+          <NavItem
+            icon={BookOpen}
+            label="Programas"
+            active={isActive('/training/plans')}
+            onClick={() => navigate('/training/plans')}
+            collapsed={isSidebarCollapsed}
           />
           <NavItem icon={ListTodo} label="Formularios" collapsed={isSidebarCollapsed} />
           <NavItem icon={Activity} label="Métricas" collapsed={isSidebarCollapsed} />
-          <NavItem 
-            icon={Dumbbell} 
-            label="Ejercicios" 
-            active={isActive('/training/exercises')} 
-            onClick={() => navigate('/training/exercises')} 
-            collapsed={isSidebarCollapsed} 
+          <NavItem
+            icon={Dumbbell}
+            label="Ejercicios"
+            active={isActive('/training/exercises')}
+            onClick={() => navigate('/training/exercises')}
+            collapsed={isSidebarCollapsed}
           />
-          <NavItem icon={GraduationCap} label="Academia" collapsed={isSidebarCollapsed} />
+          {/* <NavItem icon={GraduationCap} label="Academia" collapsed={isSidebarCollapsed} /> */}
         </NavSection>
 
         <NavSection title="Configuración" collapsed={isSidebarCollapsed}>
           <NavItem icon={CreditCard} label="Suscripción" collapsed={isSidebarCollapsed} />
-          <NavItem icon={Globe} label="Perfil público" collapsed={isSidebarCollapsed} />
+          {/* <NavItem icon={Globe} label="Perfil público" collapsed={isSidebarCollapsed} /> */}
           <NavItem icon={Bell} label="Notificaciones" collapsed={isSidebarCollapsed} />
-          <NavItem icon={Palette} label="Personalizar App" collapsed={isSidebarCollapsed} />
-          <NavItem icon={Users2} label="Equipo" badge="Beta" collapsed={isSidebarCollapsed} />
-          <NavItem icon={Code2} label="Desarrolladores" collapsed={isSidebarCollapsed} />
+          {/* <NavItem icon={Palette} label="Personalizar App" collapsed={isSidebarCollapsed} /> */}
+          {/* <NavItem icon={Users2} label="Equipo" badge="Beta" collapsed={isSidebarCollapsed} /> */}
+          {/* <NavItem icon={Code2} label="Desarrolladores" collapsed={isSidebarCollapsed} /> */}
         </NavSection>
 
         <NavSection title="Soporte" collapsed={isSidebarCollapsed}>
@@ -140,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-black flex overflow-hidden font-sans">
       {/* Desktop Sidebar */}
-      <motion.aside 
+      <motion.aside
         animate={{ width: isSidebarCollapsed ? 80 : 260 }}
         className="hidden lg:block h-screen fixed left-0 top-0 z-50"
       >
@@ -151,14 +165,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
             />
-            <motion.aside 
+            <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -171,38 +185,44 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
       </AnimatePresence>
 
-      <main 
+      <main
         className="flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300"
         style={{ marginLeft: typeof window !== 'undefined' && window.innerWidth > 1024 ? (isSidebarCollapsed ? '80px' : '260px') : 0 }}
       >
         {/* Header */}
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 lg:px-10 bg-black/80 backdrop-blur-xl z-40">
           <div className="flex items-center gap-6 flex-1">
-            <button 
-                onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2 hover:bg-slate-800 rounded-xl transition-colors"
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 hover:bg-slate-800 rounded-xl transition-colors"
             >
-                <Menu className="w-6 h-6 text-white" />
+              <Menu className="w-6 h-6 text-white" />
             </button>
             <div className="hidden md:flex items-center gap-3 bg-slate-900/50 border border-white/5 rounded-2xl px-5 py-2.5 w-full max-w-md focus-within:border-red-500/50 transition-all">
               <Search className="w-4 h-4 text-slate-500" />
-              <input type="text" placeholder="Buscar clientes, programas..." className="bg-transparent border-none text-sm text-white focus:ring-0 placeholder:text-slate-600 w-full" />
+              <input
+                type="text"
+                placeholder={user?.role_id === 1 ? "Buscar programas, ejercicios..." : "Buscar clientes, programas..."}
+                className="bg-transparent border-none text-sm text-white focus:ring-0 placeholder:text-slate-600 w-full"
+              />
             </div>
           </div>
 
           <div className="flex items-center gap-4 lg:gap-6">
             <button className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-white font-bold text-sm">
-                <Book className="w-4 h-4" /> Tutoriales
+              <Book className="w-4 h-4" /> Tutoriales
             </button>
             <div className="flex items-center gap-4 pl-6 border-l border-white/10">
               <div className="hidden sm:flex flex-col items-end">
                 <p className="text-sm font-bold text-white leading-none mb-1">{user?.email.split('@')[0]}</p>
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">{user?.role_id === 2 ? 'Entrenador' : 'Gimnasio'}</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">
+                  {user?.role_id === 1 ? 'Cliente' : user?.role_id === 2 ? 'Entrenador' : 'Gimnasio'}
+                </p>
               </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-red-900 flex items-center justify-center border-2 border-white/10 shadow-lg p-0.5">
-                 <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-red-500 font-black text-sm">
-                    {user?.email[0].toUpperCase()}
-                 </div>
+                <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-red-500 font-black text-sm">
+                  {user?.email[0].toUpperCase()}
+                </div>
               </div>
             </div>
           </div>
@@ -210,7 +230,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto bg-black p-6 lg:p-10 custom-scrollbar">
-          {children}
+          {children || <Outlet />}
         </div>
       </main>
     </div>
