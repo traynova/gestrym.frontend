@@ -14,6 +14,11 @@ export const axiosInstance = axios.create({
 // Interceptor para inyectar token
 axiosInstance.interceptors.request.use(
   (config) => {
+    // Evitar duplicación de /gestrym-auth si baseURL ya lo contiene
+    if (config.url && config.url.startsWith('/gestrym-auth') && config.baseURL && config.baseURL.endsWith('/gestrym-auth')) {
+      config.url = config.url.replace(/^\/gestrym-auth/, '');
+    }
+
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -33,7 +38,10 @@ axiosInstance.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         // Llamada directa usando axios limpio para evitar loop de interceptores
-        const response = await axios.post(`${BASE_URL}/gestrym-auth/private/auth/refresh`, {
+        const refreshUrl = BASE_URL.endsWith('/gestrym-auth')
+          ? `${BASE_URL}/public/auth/refresh`
+          : `${BASE_URL}/gestrym-auth/public/auth/refresh`;
+        const response = await axios.post(refreshUrl, {
           refresh_token: refreshToken
         });
 

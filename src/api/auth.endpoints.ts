@@ -94,57 +94,57 @@ export interface RelationshipResponse {
 export const authApi = {
   // Public
   login: async (data: LoginRequest): Promise<AuthTokens> => {
-    const response = await apiClient.post<AuthTokens>('/gestrym-auth/public/auth/login', data);
+    const response = await apiClient.post<AuthTokens>('/public/auth/login', data);
     return response.data;
   },
 
   googleLogin: async (data: GoogleLoginRequest): Promise<AuthTokens> => {
-    const response = await apiClient.post<AuthTokens>('/gestrym-auth/public/auth/google', data);
+    const response = await apiClient.post<AuthTokens>('/public/auth/google', data);
     return response.data;
   },
 
   register: async (data: RegisterRequest): Promise<MessageResponse> => {
-    const response = await apiClient.post<MessageResponse>('/gestrym-auth/public/auth/register', data);
+    const response = await apiClient.post<MessageResponse>('/public/auth/register', data);
     return response.data;
   },
 
   confirmEmail: async (token: string): Promise<ConfirmEmailResponse> => {
-    const response = await apiClient.get<ConfirmEmailResponse>(`/gestrym-auth/public/auth/confirm?token=${token}`);
+    const response = await apiClient.get<ConfirmEmailResponse>(`/public/auth/confirm?token=${token}`);
     return response.data;
   },
 
   requestPasswordRecovery: async (data: PasswordRecoveryRequest): Promise<MessageResponse> => {
-    const response = await apiClient.post<MessageResponse>('/gestrym-auth/public/auth/password/recovery', data);
+    const response = await apiClient.post<MessageResponse>('/public/auth/password/recovery', data);
     return response.data;
   },
 
   resetPassword: async (data: PasswordResetRequest): Promise<ConfirmEmailResponse> => {
-    const response = await apiClient.post<ConfirmEmailResponse>('/gestrym-auth/public/auth/password/reset', data);
+    const response = await apiClient.post<ConfirmEmailResponse>('/public/auth/password/reset', data);
     return response.data;
   },
 
   // Private
   validate: async (): Promise<void> => {
-    await apiClient.get('/gestrym-auth/private/auth/validate');
+    await apiClient.get('/private/auth/validate');
   },
 
   logout: async (token: string): Promise<MessageResponse> => {
-    const response = await apiClient.post<MessageResponse>('/gestrym-auth/private/auth/logout', { token });
+    const response = await apiClient.post<MessageResponse>('/private/auth/logout', { token });
     return response.data;
   },
 
   getRoles: async (): Promise<Role[]> => {
-    const response = await apiClient.get<Role[]>('/gestrym-auth/public/roles');
+    const response = await apiClient.get<Role[]>('/public/roles');
     return response.data;
   },
 
   getRelationships: async (): Promise<RelationshipResponse> => {
-    const response = await apiClient.get<RelationshipResponse>('/gestrym-auth/private/auth/relationships');
+    const response = await apiClient.get<RelationshipResponse>('/private/auth/relationships');
     return response.data;
   },
 
   updateBranding: async (formData: FormData): Promise<MessageResponse> => {
-    const response = await apiClient.post<MessageResponse>('/gestrym-auth/private/auth/branding', formData, {
+    const response = await apiClient.post<MessageResponse>('/private/auth/branding', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

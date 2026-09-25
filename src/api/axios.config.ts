@@ -59,6 +59,11 @@ export const apiNutritionClient = axios.create({
  */
 apiClient.interceptors.request.use(
   (config) => {
+    // Evitar duplicación de /gestrym-auth si baseURL ya lo contiene
+    if (config.url && config.url.startsWith('/gestrym-auth') && config.baseURL && config.baseURL.endsWith('/gestrym-auth')) {
+      config.url = config.url.replace(/^\/gestrym-auth/, '');
+    }
+
     // Obtenemos el estado actual de Zustand sin usar hooks dentro de una función regular
     const { token } = useAuthStore.getState();
 

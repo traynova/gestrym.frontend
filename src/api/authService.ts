@@ -78,7 +78,7 @@ export const authService = {
    */
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
-      const { data } = await apiClient.post<LoginResponse>('/gestrym-auth/public/login', credentials);
+      const { data } = await apiClient.post<LoginResponse>('/public/login', credentials);
       return data;
     } catch (error) {
       return handleApiError(error);
@@ -91,7 +91,7 @@ export const authService = {
    */
   register: async (registerData: RegisterData): Promise<{ id: number, token: string }> => {
     try {
-      const { data } = await apiClient.post('/gestrym-auth/public/auth/register', registerData);
+      const { data } = await apiClient.post('/public/auth/register', registerData);
       return data;
     } catch (error) {
       return handleApiError(error);
@@ -104,7 +104,7 @@ export const authService = {
    */
   validateToken: async (): Promise<ValidateResponse> => {
     try {
-      const { data } = await apiClient.get<ValidateResponse>('/gestrym-auth/public/auth/validate');
+      const { data } = await apiClient.get<ValidateResponse>('/public/auth/validate');
       return data;
     } catch (error) {
       return handleApiError(error);
@@ -116,7 +116,7 @@ export const authService = {
    */
   confirmEmail: async (token: string): Promise<ConfirmEmailResponse> => {
     try {
-      const { data } = await apiClient.get<ConfirmEmailResponse>(`/gestrym-auth/public/auth/confirm?token=${token}`);
+      const { data } = await apiClient.get<ConfirmEmailResponse>(`/public/auth/confirm?token=${token}`);
       return data;
     } catch (error) {
       return handleApiError(error);
@@ -128,7 +128,7 @@ export const authService = {
    */
   getPublicRoles: async (): Promise<PublicRole[]> => {
     try {
-      const { data } = await apiClient.get<PublicRole[]>('/gestrym-auth/public/roles');
+      const { data } = await apiClient.get<PublicRole[]>('/public/roles');
       return data;
     } catch (error) {
       return handleApiError(error);
@@ -137,7 +137,7 @@ export const authService = {
 
   updateBranding: async (formData: FormData): Promise<{ message: string }> => {
     try {
-      const { data } = await apiClient.post('/gestrym-auth/private/auth/branding', formData, {
+      const { data } = await apiClient.post('/private/auth/branding', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
